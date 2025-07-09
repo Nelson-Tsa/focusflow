@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - heading "FocusFlow" [level=1]
+  - paragraph: Organisez vos tâches avec la méthode GTD
+- textbox "Add a new task..."
+- button "Add"
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Tâche E2E"
+- text: Tâche E2E
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Tâche E2E"
+- text: Tâche E2E
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Tâche E2E"
+- text: Tâche E2E
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Tâche E2E"
+- text: Tâche E2E
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+- checkbox "Ma première tâche"
+- text: Ma première tâche
+- button "Delete task": ×
+```
