@@ -57,21 +57,21 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   syncError: null,
 
   fetchTasks: async () => {
-    set({ isSyncing: true, syncError: null });
-    try {
-      const res = await withRetry(() => fetch(`${API_URL}`));
-      const data = await res.json();
-      console.log('fetchTasks API response:', data);
-      // Ne pas écraser le cache si la réponse ne contient pas de tâches
-      if (Array.isArray(data.tasks ? data.tasks : data) && (data.tasks || data).length > 0) {
-        set({ tasks: data.tasks || data, isSyncing: false });
-        saveCache(data.tasks || data);
-      } else {
-        set({ isSyncing: false });
-      }
-    } catch (err: any) {
-      set({ isSyncing: false, syncError: err.message || 'Erreur réseau' });
-    }
+    // set({ isSyncing: true, syncError: null });
+    // try {
+    //   const res = await withRetry(() => fetch(`${API_URL}`));
+    //   const data = await res.json();
+    //   console.log('fetchTasks API response:', data);
+    //   // Ne pas écraser le cache si la réponse ne contient pas de tâches
+    //   if (Array.isArray(data.tasks ? data.tasks : data) && (data.tasks || data).length > 0) {
+    //     set({ tasks: data.tasks || data, isSyncing: false });
+    //     saveCache(data.tasks || data);
+    //   } else {
+    //     set({ isSyncing: false });
+    //   }
+    // } catch (err: any) {
+    //   set({ isSyncing: false, syncError: err.message || 'Erreur réseau' });
+    // }
   },
 
   addTask: async (title) => {
@@ -90,32 +90,32 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       saveCache(tasks);
       return { tasks };
     });
-    try {
-      const res = await withRetry(() => fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title }),
-      }));
-      const newTask = await res.json();
-      console.log('addTask API response:', newTask);
-      // Remplacer le task temporaire par le vrai
-      set(state => {
-        // Si l'API ne retourne pas d'id, on garde le temporaire
-        if (!newTask || !newTask.id) {
-          return { tasks: state.tasks, isSyncing: false };
-        }
-        const tasks = state.tasks.map(t => t.id === tempId ? newTask : t);
-        saveCache(tasks);
-        return { tasks, isSyncing: false };
-      });
-    } catch (err: any) {
-      // Rollback
-      set(state => {
-        const tasks = state.tasks.filter(t => t.id !== tempId);
-        saveCache(tasks);
-        return { tasks, isSyncing: false, syncError: err.message || 'Erreur réseau' };
-      });
-    }
+    // try {
+    //   const res = await withRetry(() => fetch(API_URL, {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ title }),
+    //   }));
+    //   const newTask = await res.json();
+    //   console.log('addTask API response:', newTask);
+    //   // Remplacer le task temporaire par le vrai
+    //   set(state => {
+    //     // Si l'API ne retourne pas d'id, on garde le temporaire
+    //     if (!newTask || !newTask.id) {
+    //       return { tasks: state.tasks, isSyncing: false };
+    //     }
+    //     const tasks = state.tasks.map(t => t.id === tempId ? newTask : t);
+    //     saveCache(tasks);
+    //     return { tasks, isSyncing: false };
+    //   });
+    // } catch (err: any) {
+    //   // Rollback
+    //   set(state => {
+    //     const tasks = state.tasks.filter(t => t.id !== tempId);
+    //     saveCache(tasks);
+    //     return { tasks, isSyncing: false, syncError: err.message || 'Erreur réseau' };
+    //   });
+    // }
   },
 
   toggleTask: async (id) => {
@@ -128,21 +128,21 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       saveCache(tasks);
       return { tasks };
     });
-    try {
-      await withRetry(() => fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ done: !task.done }),
-      }));
-      set({ isSyncing: false });
-    } catch (err: any) {
-      // Rollback
-      set(state => {
-        const tasks = state.tasks.map(t => t.id === id ? { ...t, done: task.done } : t);
-        saveCache(tasks);
-        return { tasks, isSyncing: false, syncError: err.message || 'Erreur réseau' };
-      });
-    }
+    // try {
+    //   await withRetry(() => fetch(`${API_URL}/${id}`, {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ done: !task.done }),
+    //   }));
+    //   set({ isSyncing: false });
+    // } catch (err: any) {
+    //   // Rollback
+    //   set(state => {
+    //     const tasks = state.tasks.map(t => t.id === id ? { ...t, done: task.done } : t);
+    //     saveCache(tasks);
+    //     return { tasks, isSyncing: false, syncError: err.message || 'Erreur réseau' };
+    //   });
+    // }
   },
 
   removeTask: async (id) => {
@@ -154,14 +154,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       saveCache(tasks);
       return { tasks };
     });
-    try {
-      await withRetry(() => fetch(`${API_URL}/${id}`, { method: 'DELETE' }));
-      set({ isSyncing: false });
-    } catch (err: any) {
-      // Rollback
-      set({ tasks: prevTasks, isSyncing: false, syncError: err.message || 'Erreur réseau' });
-      saveCache(prevTasks);
-    }
+    // try {
+    //   await withRetry(() => fetch(`${API_URL}/${id}`, { method: 'DELETE' }));
+    //   set({ isSyncing: false });
+    // } catch (err: any) {
+    //   // Rollback
+    //   set({ tasks: prevTasks, isSyncing: false, syncError: err.message || 'Erreur réseau' });
+    //   saveCache(prevTasks);
+    // }
   },
   clearCompleted: () => {
     set(state => {
