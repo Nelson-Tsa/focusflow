@@ -13,18 +13,18 @@ function sameDay(date1: Date, date2: Date) {
 }
 
 const TaskCalendar: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const tasks = useTaskStore((state) => state.tasks);
 
   // Filtrer les tâches du jour sélectionné
-  const tasksForSelectedDate = tasks.filter(task =>
-    sameDay(new Date(task.createdAt), selectedDate)
-  );
+  const tasksForSelectedDate = selectedDate
+    ? tasks.filter(task => sameDay(new Date(task.createdAt), selectedDate))
+    : [];
 
   return (
     <div className="flex flex-col items-center gap-4">
       <Calendar
-        onChange={setSelectedDate}
+        onChange={date => setSelectedDate(date as Date)}
         value={selectedDate}
         className="rounded-lg shadow"
         tileClassName={({ date, view }) => {
@@ -37,7 +37,7 @@ const TaskCalendar: React.FC = () => {
       />
       <div className="w-full mt-2">
         <h3 className="text-lg font-semibold mb-2 text-center">
-          Tâches du {selectedDate.toLocaleDateString()}
+          {selectedDate ? `Tâches du ${selectedDate.toLocaleDateString()}` : 'Sélectionne une date'}
         </h3>
         {tasksForSelectedDate.length === 0 ? (
           <div className="text-gray-400 text-center">Aucune tâche ce jour-là.</div>
