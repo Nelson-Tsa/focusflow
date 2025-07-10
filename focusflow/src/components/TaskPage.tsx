@@ -2,13 +2,12 @@ import React, { useRef, useState } from 'react';
 import TaskInput from './TaskInput';
 import TaskList from './TaskList';
 import { useFetchTasksOnMount, useTaskStore } from '../utils/useTaskStore';
+import TaskCalendar from './TaskCalendar';
 
 const menu = [
-  { label: 'Home', icon: '🏠' },
-  { label: 'My Tasks', icon: '📝' },
-  { label: 'Calendar', icon: '📅' },
-  { label: 'Reports', icon: '📊' },
-  { label: 'Settings', icon: '⚙️' },
+  { label: 'My Tasks', value: 'tasks', icon: '📝' },
+  { label: 'Calendar', value: 'calendar', icon: '📅' },
+  // Ajoute d'autres items ici si besoin
 ];
 
 const tabs = [
@@ -20,6 +19,7 @@ const tabs = [
 const TaskPage: React.FC = () => {
   useFetchTasksOnMount();
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'completed'>('all');
+  const [activePage, setActivePage] = useState<'tasks' | 'calendar'>('tasks');
   const inputRef = useRef<HTMLInputElement>(null);
   const tasks = useTaskStore((state) => state.tasks);
 
@@ -44,11 +44,16 @@ const TaskPage: React.FC = () => {
         <nav className="flex-1">
           <ul className="space-y-2">
             {menu.map((item) => (
-              <li key={item.label}>
-                <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-500/20 transition">
+              <li key={item.value}>
+                <button
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition font-medium ${
+                    activePage === item.value ? 'bg-green-500/80 text-white' : 'hover:bg-green-500/20 text-white'
+                  }`}
+                  onClick={() => setActivePage(item.value as 'tasks' | 'calendar')}
+                >
                   <span className="text-xl">{item.icon}</span>
-                  <span className="font-medium">{item.label}</span>
-                </a>
+                  <span>{item.label}</span>
+                </button>
               </li>
             ))}
           </ul>
@@ -62,31 +67,40 @@ const TaskPage: React.FC = () => {
       </aside>
       {/* Main content */}
       <main className="flex-1 flex flex-col items-center py-12 px-4">
-        <header className="w-full max-w-2xl mb-8">
-          <h1 className="text-3xl font-bold text-gray-100 mb-2">My Tasks</h1>
-          <p className="text-green-300">Manage your tasks efficiently and stay on top of your schedule.</p>
-        </header>
-        {/* Tabs */}
-        <div className="w-full max-w-2xl flex gap-4 mb-6">
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              className={`px-4 py-2 rounded-full font-semibold shadow transition ${
-                activeTab === tab.value
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-green-100'
-              }`}
-              onClick={() => setActiveTab(tab.value as any)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        {/* Task input & list */}
-        <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
-          <TaskInput inputRef={inputRef} />
-          <TaskList tasks={filteredTasks} />
-        </div>
+        {activePage === 'tasks' && (
+          <>
+            <header className="w-full max-w-2xl mb-8">
+              <h1 className="text-3xl font-bold text-gray-100 mb-2">My Tasks</h1>
+              <p className="text-green-300">Manage your tasks efficiently and stay on top of your schedule.</p>
+            </header>
+            {/* Tabs */}
+            <div className="w-full max-w-2xl flex gap-4 mb-6">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  className={`px-4 py-2 rounded-full font-semibold shadow transition ${
+                    activeTab === tab.value
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-green-100'
+                  }`}
+                  onClick={() => setActiveTab(tab.value as any)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            {/* Task input & list */}
+            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
+              <TaskInput inputRef={inputRef} />
+              <TaskList tasks={filteredTasks} />
+            </div>
+          </>
+        )}
+        {activePage === 'calendar' && (
+          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
+            <TaskCalendar />
+          </div>
+        )}
       </main>
     </div>
   );

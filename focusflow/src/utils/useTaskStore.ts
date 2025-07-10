@@ -14,7 +14,7 @@ interface TaskStore {
   isSyncing: boolean;
   syncError: string | null;
   fetchTasks: () => Promise<void>;
-  addTask: (title: string) => Promise<void>;
+  addTask: (title: string, date?: Date) => Promise<void>;
   toggleTask: (id: number) => Promise<void>;
   removeTask: (id: number) => Promise<void>;
   clearCompleted: () => void;
@@ -74,7 +74,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     // }
   },
 
-  addTask: async (title) => {
+  addTask: async (title, date) => {
     set({ isSyncing: true, syncError: null });
     // Optimistic update
     const tempId = Date.now();
@@ -82,7 +82,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       id: tempId,
       title,
       done: false,
-      createdAt: new Date().toISOString(),
+      createdAt: (date ? date : new Date()).toISOString(),
       updatedAt: new Date().toISOString(),
     };
     set(state => {
