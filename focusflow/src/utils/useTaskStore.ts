@@ -17,6 +17,7 @@ interface TaskStore {
   addTask: (title: string) => Promise<void>;
   toggleTask: (id: number) => Promise<void>;
   removeTask: (id: number) => Promise<void>;
+  clearCompleted: () => void;
 }
 
 const API_URL = 'http://localhost:3001/api/tasks';
@@ -150,6 +151,13 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set({ tasks: prevTasks, isSyncing: false, syncError: err.message || 'Erreur réseau' });
       saveCache(prevTasks);
     }
+  },
+  clearCompleted: () => {
+    set(state => {
+      const tasks = state.tasks.filter(t => !t.done);
+      saveCache(tasks);
+      return { tasks };
+    });
   },
 }));
 
