@@ -61,8 +61,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     try {
       const res = await withRetry(() => fetch(`${API_URL}`));
       const data = await res.json();
-      set({ tasks: data.tasks || data, isSyncing: false });
-      saveCache(data.tasks || data);
+      console.log('fetchTasks API response:', data);
+      // Ne pas écraser le cache si la réponse ne contient pas de tâches
+      if (Array.isArray(data.tasks ? data.tasks : data) && (data.tasks || data).length > 0) {
+        set({ tasks: data.tasks || data, isSyncing: false });
+        saveCache(data.tasks || data);
+      } else {
+        set({ isSyncing: false });
+      }
     } catch (err: any) {
       set({ isSyncing: false, syncError: err.message || 'Erreur réseau' });
     }
@@ -91,8 +97,13 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         body: JSON.stringify({ title }),
       }));
       const newTask = await res.json();
+      console.log('addTask API response:', newTask);
       // Remplacer le task temporaire par le vrai
       set(state => {
+        // Si l'API ne retourne pas d'id, on garde le temporaire
+        if (!newTask || !newTask.id) {
+          return { tasks: state.tasks, isSyncing: false };
+        }
         const tasks = state.tasks.map(t => t.id === tempId ? newTask : t);
         saveCache(tasks);
         return { tasks, isSyncing: false };
